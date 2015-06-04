@@ -55,3 +55,6 @@ License
 
 This module is available under the GPL v3 or later. See the file COPYING for
 details.
+
+[![Build Status](https://travis-ci.org/sopoforic/cgrr-gamecube.svg?branch=master)](https://travis-ci.org/sopoforic/cgrr-gamecube)
+[![Code Health](https://landscape.io/github/sopoforic/cgrr-gamecube/master/landscape.svg?style=flat)](https://landscape.io/github/sopoforic/cgrr-gamecube/master)
