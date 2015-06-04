@@ -56,11 +56,15 @@ gci_header_reader = FileReader(
     byte_order = ">"
 )
 
-def get_gci_reader(path):
-    header = read_header(path)
-    data_length = header['BlockCount']*8192
+HEADER_LENGTH = gci_header_reader.struct.size
+
+def get_gci_reader(path=None, block_count=None):
+    if not block_count:
+        header = read_header(path)
+        block_count = header['BlockCount']
+    data_length = block_count * 8192
     gcifile_format = [
-        ("m_gci_header", "{}s".format(gci_header_reader.struct.size)),
+        ("m_gci_header", "{}s".format(HEADER_LENGTH)),
         ("m_save_data", "{}s".format(data_length)),
     ]
     gci_reader = FileReader(
@@ -71,20 +75,34 @@ def get_gci_reader(path):
         },
         massage_out = {
             "m_gci_header" : gci_header_reader.pack,
-            "m_save_data"  : "".join,
+            "m_save_data"  : b"".join,
         },
     )
     return gci_reader
 
 def read_header(path):
     with open(path, "rb") as gcifile:
-        data = gcifile.read(gci_header_reader.struct.size)
+        data = gcifile.read(HEADER_LENGTH)
+    header = parse_header(data)
+    return header
+
+def parse_header(data):
     header = gci_header_reader.unpack(data)
     return header
 
 def read_gci(path):
-    gci_reader = get_gci_reader(path)
     with open (path, "rb") as gcifile:
         data = gcifile.read()
+    gci = parse_gci(data)
+    return gci
+
+def parse_gci(data):
+    block_count = parse_header(data[:HEADER_LENGTH])['BlockCount']
+    gci_reader = get_gci_reader(block_count=block_count)
     gci = gci_reader.unpack(data)
     return gci
+
+def write_gci(gci):
+    block_count = gci['m_gci_header']['BlockCount']
+    data = get_gci_reader(block_count=block_count).pack(gci)
+    return data
