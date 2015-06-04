@@ -23,7 +23,7 @@ class Test_gamecube_gci_a(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.test_gci = "save.gci"
+        cls.test_gci = "test.gci"
 
     def test_roundtrip(self):
         with open(self.test_gci, "rb") as test_gci:
