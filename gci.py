@@ -59,6 +59,16 @@ gci_header_reader = FileReader(
 HEADER_LENGTH = gci_header_reader.struct.size
 
 def get_gci_reader(path=None, block_count=None):
+    """Return a FileReader suited to a particular GCI file.
+
+    Since GCI files are of variable length, this function determines the length
+    of the GCI file given by path and returns an appropriate FileReader.
+
+    Alternatively, if given a block_count, this function produces a FileReader
+    that for a GCI file with that many blocks. This is particularly useful when
+    writing a GCI file from its dictionary representation.
+
+    """
     if not block_count:
         header = read_header(path)
         block_count = header['BlockCount']
@@ -81,28 +91,33 @@ def get_gci_reader(path=None, block_count=None):
     return gci_reader
 
 def read_header(path):
+    """Return the header of a GCI file located on disk."""
     with open(path, "rb") as gcifile:
         data = gcifile.read(HEADER_LENGTH)
     header = parse_header(data)
     return header
 
 def parse_header(data):
+    """Parse the header given as a bytestring."""
     header = gci_header_reader.unpack(data)
     return header
 
 def read_gci(path):
+    """Parse and return a GCI file located on disk."""
     with open (path, "rb") as gcifile:
         data = gcifile.read()
     gci = parse_gci(data)
     return gci
 
 def parse_gci(data):
+    """Parse and return a bytestring representing a GCI file."""
     block_count = parse_header(data[:HEADER_LENGTH])['BlockCount']
     gci_reader = get_gci_reader(block_count=block_count)
     gci = gci_reader.unpack(data)
     return gci
 
-def write_gci(gci):
+def write_gci(gci): # TODO: rename?
+    """Return a bytestring representing a GCI file."""
     block_count = gci['m_gci_header']['BlockCount']
     data = get_gci_reader(block_count=block_count).pack(gci)
     return data
