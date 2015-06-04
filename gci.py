@@ -16,10 +16,14 @@
 # You should have received a copy of the GNU General Public License
 # along with CGRR.  If not, see <http://www.gnu.org/licenses/>.
 """Parses GameCube GCI files."""
+from datetime import datetime, timedelta
+
 from cgrr import FileReader
 
 key = "gamecube_gci_a"
 title = "GameCube GCI File"
+
+epoch = datetime(2000,1,1)
 
 # Based on code from Dolphin in Source/Core/Core/HW/GCMemcard.h
 # TODO: decode flags
@@ -47,11 +51,13 @@ gci_header_reader = FileReader(
         "Gamecode"  : (lambda s: s.decode('ascii').strip('\x00')),
         "Makercode" : (lambda s: s.decode('ascii').strip('\x00')),
         "Filename"  : (lambda s: s.decode('ascii').strip('\x00')),
+        "ModTime"   : (lambda t: (epoch + timedelta(seconds=t))),
     },
     massage_out = {
         "Gamecode"  : (lambda s: s.encode('ascii')),
         "Makercode" : (lambda s: s.encode('ascii')),
         "Filename"  : (lambda s: s.encode('ascii')),
+        "ModTime"   : (lambda t: ((t - epoch).days*86400 + (t - epoch).seconds)),
     },
     byte_order = ">"
 )

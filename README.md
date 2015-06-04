@@ -22,10 +22,10 @@ Reading a GCI file:
                   'IconFmt': 1041,
                   'ImageOffset': 64,
                   'Makercode': '01',
-                  'ModTime': 374436310,
+                  'ModTime': datetime.datetime(2011, 11, 12, 18, 5, 10),
                   'Permissions': 4,
                   'Unused1': 255,
-                  'Unused2': 65535},
+                  'Unused2': 65535}
  'm_save_data': [b"This is a test GCI file. The data here should be a part of
  the first block. After this, it's all zeroes until the next block.\x00\x00..."]
  ```
