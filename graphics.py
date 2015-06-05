@@ -6,7 +6,7 @@ def parse_ci8(data, width):
     height = (len(data) - 512)//width
     palette = parse_rgb5a3_palette(data[-512:])
     img = Image.new("RGBA", size=(width, height))
-    imgdata = reorder_8_4_tiles(data[:-512], width)
+    imgdata = reorder_tiles(data[:-512], (8, 4), width, 8)
     try:
         pixmap = [palette[pixel] for pixel in imgdata]
     except TypeError:
@@ -28,17 +28,18 @@ def parse_rgb5a3_palette(data):
         palette.append(rgb5a3_to_rgba(color))
     return palette
 
-def reorder_8_4_tiles(data, width):
-    tiles_per_row = width//8
-    tile_rows = len(data)//(width*4)
-    newdata = b''
+def reorder_tiles(data, dims, width, bpp=8):
     # This is an awful monstrosity, but all it's doing is reordering the data so
-    # that instead of being ordered in 8x4 tiles, it's all just in a line, one
-    # row at a time.
-    for tile_row in range(tile_rows):
-        for row in range(4):
-            for tile in range(tiles_per_row):
-                newdata += data[(tile_row*32*tiles_per_row) + (row*8) + (32*tile):(tile_row*32*tiles_per_row) + (row*8)+(32*tile)+8]
+    # that instead of being ordered in tiles, it's all just in a line, one row
+    # at a time.
+    tile_width, tile_height = dims
+    newdata = b''
+    tile_row_size = width*tile_height*bpp//8
+    tile_size = tile_width*tile_height*bpp//8
+    for tile_row in range(0, len(data), tile_row_size):
+        for row in range(0, tile_height*tile_width, tile_width):
+            for tile in range(0, tile_row_size, tile_size):
+                newdata += data[tile_row + row + tile:tile_row + row + tile + tile_width*bpp//8]
     return newdata
 
 # 1 -> True, 0 -> False
