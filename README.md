@@ -12,7 +12,7 @@ Reading a GCI file:
 >>> import gci
 >>> gci.read_gci("test.gci")
 {'m_gci_header': {'AnimSpeed': 4095,
-                  'BIFlags': 1,
+                  'BIFlags': <BIFlags.BANNER_CI8: 1>,
                   'BlockCount': 3,
                   'CommentsAddr': 0,
                   'CopyCounter': 1,
@@ -47,6 +47,9 @@ Requirements
 
 * Python 2.7+ or 3.2+
 * cgrr from https://github.com/sopoforic/cgrr
+* enums
+    * These are part of python 3.4+
+    * For older python versions, `pip install enum34`
 
 You can install cgrr with `pip install -r requirements.txt`.
 
