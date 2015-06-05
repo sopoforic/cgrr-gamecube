@@ -40,8 +40,7 @@ Reading a GCI file:
                   'Permissions': {<Permissions.PERM_NO_COPY: 4>},
                   'Unused1': 255,
                   'Unused2': 65535}
- 'm_save_data': [b"This is a test GCI file. The data here should be a part of
- the first block. After this, it's all zeroes until the next block.\x00\x00..."]
+ 'm_save_data': [b"This is a test GCI file. The data here should be a..."]
  ```
 
 Editing a gci file:
