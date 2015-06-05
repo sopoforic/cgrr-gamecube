@@ -1,5 +1,22 @@
 from PIL import Image
 
+def parse_rgb5a3(data, width):
+    if ((len(data))/2) % width != 0:
+        raise ValueError("Invalid number of tiles for width {}".format(width))
+    height = (len(data))//(width * 2)
+    img = Image.new("RGBA", size=(width, height))
+    imgdata = reorder_tiles(data, (4, 4), width, 16)
+    pixmap = []
+    for a, b in (imgdata[i:i+2] for i in range(0, len(imgdata), 2)):
+        try:
+            color = (a << 8) + b
+        except TypeError:
+            # python 2
+            color = (ord(a) << 8) + ord(b)
+        pixmap.append(rgb5a3_to_rgba(color))
+    img.putdata(pixmap)
+    return img
+
 def parse_ci8(data, width):
     if ((len(data) - 512)/4) % width != 0:
         raise ValueError("Invalid number of tiles for width {}".format(width))
