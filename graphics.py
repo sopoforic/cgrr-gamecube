@@ -37,7 +37,7 @@ def reorder_tiles(data, dims, width, bpp=8):
     tile_row_size = width*tile_height*bpp//8
     tile_size = tile_width*tile_height*bpp//8
     for tile_row in range(0, len(data), tile_row_size):
-        for row in range(0, tile_height*tile_width, tile_width):
+        for row in range(0, tile_height*tile_width*bpp//8, tile_width*bpp//8):
             for tile in range(0, tile_row_size, tile_size):
                 newdata += data[tile_row + row + tile:tile_row + row + tile + tile_width*bpp//8]
     return newdata
