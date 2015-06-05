@@ -30,11 +30,34 @@ title = "GameCube GCI File"
 
 epoch = datetime(2000,1,1) # TODO: should it be datetime(1999,12,31,23,59,59)?
 
+# 1 -> True, 0 -> False
+def int_to_bitfield(s):
+    return lambda r: [bool((r >> ((s-1) - n) & 1)) for n in range(s)]
+# True -> 1, False -> 0
+def bitfield_to_int(s):
+    return lambda r: sum([2 ** n for n in range(s) if r[(s-1)-n]])
+
 class BIFlags(Enum):
     BANNER_NONE   = 0b00
     BANNER_CI8    = 0b01
     BANNER_RGB5A3 = 0b10
     BANNER_11     = 0b11 # used by time splitters 2 and 3, which have no banner
+
+class IconFmt(Enum):
+    ICON_NONE       = 0b00
+    ICON_CI8_SHARED = 0b01
+    ICON_RGB5A3     = 0b10
+    ICON_CI8_UNIQUE = 0b11
+
+def to_iconfmt(num):
+    bf = int_to_bitfield(16)(num)
+    iconfmt = [IconFmt(bitfield_to_int(2)(bf[i:i+2])) for i in range(0,16,2)]
+    return iconfmt
+
+def from_iconfmt(iconfmt):
+    l = [i for sl in [int_to_bitfield(2)(i.value) for i in iconfmt] for i in sl]
+    num = bitfield_to_int(16)(l)
+    return num
 
 # Based on code from Dolphin in Source/Core/Core/HW/GCMemcard.h
 # The names here match the names used there.
@@ -47,9 +70,9 @@ gci_header_format = [       # Offset  Size    Notes
     ("Filename",    "32s"), # 0x08    0x20
     ("ModTime",     "L"),   # 0x28    0x04    seconds since 2000-01-01 00:00:00
     ("ImageOffset", "L"),   # 0x2c    0x04
-    ("IconFmt", "H"),       # 0x30    0x02
-    ("AnimSpeed", "H"),     # 0x32    0x02
-    ("Permissions", "B"),   # 0x34    0x01
+    ("IconFmt", "H"),       # 0x30    0x02    TODO
+    ("AnimSpeed", "H"),     # 0x32    0x02    TODO
+    ("Permissions", "B"),   # 0x34    0x01    TODO
     ("CopyCounter", "B"),   # 0x35    0x01
     ("FirstBlock", "H"),    # 0x36    0x02    # of first block of file (0 == offset 0)
     ("BlockCount", "H"),    # 0x38    0x02    file length (# of blocks in file)
@@ -65,6 +88,7 @@ gci_header_reader = FileReader(
         "BIFlags"   : (BIFlags),
         "Filename"  : (lambda s: s.decode('ascii').strip('\x00')),
         "ModTime"   : (lambda t: (epoch + timedelta(seconds=t))),
+        "IconFmt"   : (to_iconfmt),
     },
     massage_out = {
         "Gamecode"  : (lambda s: s.encode('ascii')),
@@ -72,6 +96,7 @@ gci_header_reader = FileReader(
         "BIFlags"   : (lambda b: b.value),
         "Filename"  : (lambda s: s.encode('ascii')),
         "ModTime"   : (lambda t: ((t - epoch).days*86400 + (t - epoch).seconds)),
+        "IconFmt"   : (from_iconfmt),
     },
     byte_order = ">"
 )
