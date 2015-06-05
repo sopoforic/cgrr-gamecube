@@ -214,5 +214,6 @@ def parse_extra_data(gci):
         img = parse_ci8(data, 96)
         extra['banner'] = img
     else:
-        raise NotImplementedError("This banner format is not yet supported.")
+        # raise NotImplementedError("This banner format is not yet supported.")
+        pass
     return extra
