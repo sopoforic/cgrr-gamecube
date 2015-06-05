@@ -37,7 +37,7 @@ Reading a GCI file:
                   'ImageOffset': 64,
                   'Makercode': '01',
                   'ModTime': datetime.datetime(2011, 11, 12, 18, 5, 10),
-                  'Permissions': 4,
+                  'Permissions': {<Permissions.PERM_NO_COPY: 4>},
                   'Unused1': 255,
                   'Unused2': 65535}
  'm_save_data': [b"This is a test GCI file. The data here should be a part of

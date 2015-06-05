@@ -55,6 +55,11 @@ class AnimSpeed(Enum):
     ANIM_8_FRAMES  = 0b10
     ANIM_12_FRAMES = 0b11
 
+class Permissions(Enum):
+    PERM_NO_MOVE = 0b1000
+    PERM_NO_COPY = 0b0100
+    PERM_PUBLIC  = 0b0010
+
 def to_iconfmt(num):
     bf = int_to_bitfield(16)(num)
     iconfmt = [IconFmt(bitfield_to_int(2)(bf[i:i+2])) for i in range(0,16,2)]
@@ -75,9 +80,15 @@ def from_animspeed(anim):
     num = bitfield_to_int(16)(l)
     return num
 
+def to_permissions(num):
+    permissions = set(p for p in Permissions if not p.value ^ num)
+    return permissions
+
+def from_permissions(permissions):
+    return sum(p.value for p in permissions)
+
 # Based on code from Dolphin in Source/Core/Core/HW/GCMemcard.h
 # The names here match the names used there.
-# TODO: decode flags
 gci_header_format = [       # Offset  Size    Notes
     ("Gamecode",    "4s"),  # 0x00    0x04    the fourth byte is the region code
     ("Makercode",   "2s"),  # 0x04    0x02
@@ -88,7 +99,7 @@ gci_header_format = [       # Offset  Size    Notes
     ("ImageOffset", "L"),   # 0x2c    0x04
     ("IconFmt", "H"),       # 0x30    0x02
     ("AnimSpeed", "H"),     # 0x32    0x02
-    ("Permissions", "B"),   # 0x34    0x01    TODO
+    ("Permissions", "B"),   # 0x34    0x01
     ("CopyCounter", "B"),   # 0x35    0x01
     ("FirstBlock", "H"),    # 0x36    0x02    # of first block of file (0 == offset 0)
     ("BlockCount", "H"),    # 0x38    0x02    file length (# of blocks in file)
@@ -99,22 +110,24 @@ gci_header_format = [       # Offset  Size    Notes
 gci_header_reader = FileReader(
     format = gci_header_format,
     massage_in = {
-        "Gamecode"  : (lambda s: s.decode('ascii').strip('\x00')),
-        "Makercode" : (lambda s: s.decode('ascii').strip('\x00')),
-        "BIFlags"   : (BIFlags),
-        "Filename"  : (lambda s: s.decode('ascii').strip('\x00')),
-        "ModTime"   : (lambda t: (epoch + timedelta(seconds=t))),
-        "IconFmt"   : (to_iconfmt),
-        "AnimSpeed" : (to_animspeed),
+        "Gamecode"    : (lambda s: s.decode('ascii').strip('\x00')),
+        "Makercode"   : (lambda s: s.decode('ascii').strip('\x00')),
+        "BIFlags"     : (BIFlags),
+        "Filename"    : (lambda s: s.decode('ascii').strip('\x00')),
+        "ModTime"     : (lambda t: (epoch + timedelta(seconds=t))),
+        "IconFmt"     : (to_iconfmt),
+        "AnimSpeed"   : (to_animspeed),
+        "Permissions" : (to_permissions),
     },
     massage_out = {
-        "Gamecode"  : (lambda s: s.encode('ascii')),
-        "Makercode" : (lambda s: s.encode('ascii')),
-        "BIFlags"   : (lambda b: b.value),
-        "Filename"  : (lambda s: s.encode('ascii')),
-        "ModTime"   : (lambda t: ((t - epoch).days*86400 + (t - epoch).seconds)),
-        "IconFmt"   : (from_iconfmt),
-        "AnimSpeed" : (from_animspeed),
+        "Gamecode"    : (lambda s: s.encode('ascii')),
+        "Makercode"   : (lambda s: s.encode('ascii')),
+        "BIFlags"     : (lambda b: b.value),
+        "Filename"    : (lambda s: s.encode('ascii')),
+        "ModTime"     : (lambda t: ((t - epoch).days*86400 + (t - epoch).seconds)),
+        "IconFmt"     : (from_iconfmt),
+        "AnimSpeed"   : (from_animspeed),
+        "Permissions" : (from_permissions),
     },
     byte_order = ">"
 )
