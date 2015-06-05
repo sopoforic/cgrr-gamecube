@@ -16,6 +16,11 @@
 # You should have received a copy of the GNU General Public License
 # along with CGRR.  If not, see <http://www.gnu.org/licenses/>.
 """Parses GameCube GCI files."""
+try:
+    from enum import Enum
+except ImportError:
+    from enum34 import Enum
+
 from datetime import datetime, timedelta
 
 from cgrr import FileReader
@@ -24,6 +29,12 @@ key = "gamecube_gci_a"
 title = "GameCube GCI File"
 
 epoch = datetime(2000,1,1) # TODO: should it be datetime(1999,12,31,23,59,59)?
+
+class BIFlags(Enum):
+    BANNER_NONE   = 0b00
+    BANNER_CI8    = 0b01
+    BANNER_RGB5A3 = 0b10
+    BANNER_11     = 0b11 # used by time splitters 2 and 3, which have no banner
 
 # Based on code from Dolphin in Source/Core/Core/HW/GCMemcard.h
 # The names here match the names used there.
@@ -51,12 +62,14 @@ gci_header_reader = FileReader(
     massage_in = {
         "Gamecode"  : (lambda s: s.decode('ascii').strip('\x00')),
         "Makercode" : (lambda s: s.decode('ascii').strip('\x00')),
+        "BIFlags"   : (BIFlags),
         "Filename"  : (lambda s: s.decode('ascii').strip('\x00')),
         "ModTime"   : (lambda t: (epoch + timedelta(seconds=t))),
     },
     massage_out = {
         "Gamecode"  : (lambda s: s.encode('ascii')),
         "Makercode" : (lambda s: s.encode('ascii')),
+        "BIFlags"   : (lambda b: b.value),
         "Filename"  : (lambda s: s.encode('ascii')),
         "ModTime"   : (lambda t: ((t - epoch).days*86400 + (t - epoch).seconds)),
     },
