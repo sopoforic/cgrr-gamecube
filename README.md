@@ -11,7 +11,14 @@ Reading a GCI file:
 ```python
 >>> import gci
 >>> gci.read_gci("test.gci")
-{'m_gci_header': {'AnimSpeed': 4095,
+{'m_gci_header': {'AnimSpeed': [<AnimSpeed.ANIM_NO_ICON: 0>,
+                                <AnimSpeed.ANIM_NO_ICON: 0>,
+                                <AnimSpeed.ANIM_12_FRAMES: 3>,
+                                <AnimSpeed.ANIM_12_FRAMES: 3>,
+                                <AnimSpeed.ANIM_12_FRAMES: 3>,
+                                <AnimSpeed.ANIM_12_FRAMES: 3>,
+                                <AnimSpeed.ANIM_12_FRAMES: 3>,
+                                <AnimSpeed.ANIM_12_FRAMES: 3>],
                   'BIFlags': <BIFlags.BANNER_CI8: 1>,
                   'BlockCount': 3,
                   'CommentsAddr': 0,

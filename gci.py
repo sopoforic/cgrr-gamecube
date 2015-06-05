@@ -49,6 +49,12 @@ class IconFmt(Enum):
     ICON_RGB5A3     = 0b10
     ICON_CI8_UNIQUE = 0b11
 
+class AnimSpeed(Enum):
+    ANIM_NO_ICON   = 0b00
+    ANIM_4_FRAMES  = 0b01
+    ANIM_8_FRAMES  = 0b10
+    ANIM_12_FRAMES = 0b11
+
 def to_iconfmt(num):
     bf = int_to_bitfield(16)(num)
     iconfmt = [IconFmt(bitfield_to_int(2)(bf[i:i+2])) for i in range(0,16,2)]
@@ -56,6 +62,16 @@ def to_iconfmt(num):
 
 def from_iconfmt(iconfmt):
     l = [i for sl in [int_to_bitfield(2)(i.value) for i in iconfmt] for i in sl]
+    num = bitfield_to_int(16)(l)
+    return num
+
+def to_animspeed(num):
+    bf = int_to_bitfield(16)(num)
+    anim = [AnimSpeed(bitfield_to_int(2)(bf[i:i+2])) for i in range(0,16,2)]
+    return anim
+
+def from_animspeed(anim):
+    l = [i for sl in [int_to_bitfield(2)(i.value) for i in anim] for i in sl]
     num = bitfield_to_int(16)(l)
     return num
 
@@ -70,8 +86,8 @@ gci_header_format = [       # Offset  Size    Notes
     ("Filename",    "32s"), # 0x08    0x20
     ("ModTime",     "L"),   # 0x28    0x04    seconds since 2000-01-01 00:00:00
     ("ImageOffset", "L"),   # 0x2c    0x04
-    ("IconFmt", "H"),       # 0x30    0x02    TODO
-    ("AnimSpeed", "H"),     # 0x32    0x02    TODO
+    ("IconFmt", "H"),       # 0x30    0x02
+    ("AnimSpeed", "H"),     # 0x32    0x02
     ("Permissions", "B"),   # 0x34    0x01    TODO
     ("CopyCounter", "B"),   # 0x35    0x01
     ("FirstBlock", "H"),    # 0x36    0x02    # of first block of file (0 == offset 0)
@@ -89,6 +105,7 @@ gci_header_reader = FileReader(
         "Filename"  : (lambda s: s.decode('ascii').strip('\x00')),
         "ModTime"   : (lambda t: (epoch + timedelta(seconds=t))),
         "IconFmt"   : (to_iconfmt),
+        "AnimSpeed" : (to_animspeed),
     },
     massage_out = {
         "Gamecode"  : (lambda s: s.encode('ascii')),
@@ -97,6 +114,7 @@ gci_header_reader = FileReader(
         "Filename"  : (lambda s: s.encode('ascii')),
         "ModTime"   : (lambda t: ((t - epoch).days*86400 + (t - epoch).seconds)),
         "IconFmt"   : (from_iconfmt),
+        "AnimSpeed" : (from_animspeed),
     },
     byte_order = ">"
 )
