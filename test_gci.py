@@ -33,3 +33,13 @@ class Test_gamecube_gci_a(unittest.TestCase):
 
         self.assertEqual(original_data, new_data,
             "roundtripped gci differs from original")
+
+    def test_parse_extra_data(self):
+        g = gci.read_gci(self.test_gci)
+        e = gci.parse_extra_data(g)
+
+        self.assertEqual(e['game_name'], "Test Game",
+            "game_name read incorrectly")
+
+        self.assertEqual(e['file_info'], "Test file info.",
+            "file_info read incorrectly")
