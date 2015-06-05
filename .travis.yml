@@ -7,3 +7,6 @@ python:
   - "nightly"
 cache: pip
 script: nosetests
+install:
+  - if [[ $TRAVIS_PYTHON_VERSION < 3.4 ]]; then pip install enum34; fi
+  - pip install -r requirements.txt
