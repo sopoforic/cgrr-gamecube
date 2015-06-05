@@ -25,6 +25,8 @@ from datetime import datetime, timedelta
 
 from cgrr import FileReader
 
+from ci8 import parse_ci8
+
 key = "gamecube_gci_a"
 title = "GameCube GCI File"
 
@@ -204,4 +206,13 @@ def parse_extra_data(gci):
     offset = gci['m_gci_header']['CommentsAddr']
     extra['game_name'] = gci['m_save_data'][0][offset:offset+32].decode('ascii').rstrip('\x00')
     extra['file_info'] = gci['m_save_data'][0][offset+32:offset+64].decode('ascii').rstrip('\x00')
+    # TODO: decode icon and other banner format
+    if gci['m_gci_header']['BIFlags'] == BIFlags.BANNER_CI8:
+        offset = gci['m_gci_header']['ImageOffset']
+        block = gci['m_save_data'][0]
+        data = block[offset:offset+3584]
+        img = parse_ci8(data, 96)
+        extra['banner'] = img
+    else:
+        raise NotImplementedError("This banner format is not yet supported.")
     return extra
