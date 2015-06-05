@@ -128,3 +128,11 @@ def write_gci(gci): # TODO: rename?
     block_count = gci['m_gci_header']['BlockCount']
     data = get_gci_reader(block_count=block_count).pack(gci)
     return data
+
+def parse_extra_data(gci):
+    """Parses additional (non-header) data in a gci."""
+    extra = {}
+    offset = gci['m_gci_header']['CommentsAddr']
+    extra['game_name'] = gci['m_save_data'][0][offset:offset+32].decode('ascii')
+    extra['file_info'] = gci['m_save_data'][0][offset+32:offset+64].decode('ascii')
+    return extra
