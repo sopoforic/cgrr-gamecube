@@ -60,11 +60,12 @@ Requirements
 
 * Python 2.7+ or 3.2+
 * cgrr from https://github.com/sopoforic/cgrr
+* pillow
 * enums
     * These are part of python 3.4+
     * For older python versions, `pip install enum34`
 
-You can install cgrr with `pip install -r requirements.txt`.
+You can install cgrr and pillow with `pip install -r requirements.txt`.
 
 License
 =======
