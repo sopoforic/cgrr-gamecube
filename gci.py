@@ -146,6 +146,6 @@ def parse_extra_data(gci):
     """Parses additional (non-header) data in a gci."""
     extra = {}
     offset = gci['m_gci_header']['CommentsAddr']
-    extra['game_name'] = gci['m_save_data'][0][offset:offset+32].decode('ascii')
-    extra['file_info'] = gci['m_save_data'][0][offset+32:offset+64].decode('ascii')
+    extra['game_name'] = gci['m_save_data'][0][offset:offset+32].decode('ascii').rstrip('\x00')
+    extra['file_info'] = gci['m_save_data'][0][offset+32:offset+64].decode('ascii').rstrip('\x00')
     return extra
