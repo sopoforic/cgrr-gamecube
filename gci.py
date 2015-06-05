@@ -25,7 +25,7 @@ from datetime import datetime, timedelta
 
 from cgrr import FileReader
 
-from ci8 import parse_ci8
+from graphics import parse_ci8
 
 key = "gamecube_gci_a"
 title = "GameCube GCI File"
