@@ -7,7 +7,11 @@ def parse_ci8(data, width):
     palette = parse_palette(data[-512:])
     img = Image.new("RGBA", size=(width, height))
     imgdata = reorder_tiles(data[:-512], width)
-    pixmap = [palette[pixel] for pixel in imgdata]
+    try:
+        pixmap = [palette[pixel] for pixel in imgdata]
+    except TypeError:
+        # python 2
+        pixmap = [palette[ord(pixel)] for pixel in imgdata]
     img.putdata(pixmap)
     return img
 
@@ -16,7 +20,11 @@ def parse_palette(data):
         raise ValueError("Palette length must be 512 bytes.")
     palette = []
     for a, b in (data[i:i+2] for i in range(0, 512, 2)):
-        value = (a << 8) + b
+        try:
+            value = (a << 8) + b
+        except TypeError:
+            # python 2
+            value = (ord(a) << 8) + ord(b)
         bf = int_to_bitfield(16)(value)
         # These are five bits per channel plus a transparency bit, for a total
         # of 16 bits per pixel.
