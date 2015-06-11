@@ -62,6 +62,14 @@ class Permissions(Enum):
     PERM_NO_COPY = 0b0100
     PERM_PUBLIC  = 0b0010
 
+class Region(Enum):
+    REGION_JAPAN  = "J"
+    REGION_EUROPE = "P"
+    REGION_US     = "E"
+
+def get_region(gci):
+    return Region(gci['m_gci_header']['Gamecode'][-1])
+
 def to_iconfmt(num):
     bf = int_to_bitfield(16)(num)
     iconfmt = [IconFmt(bitfield_to_int(2)(bf[i:i+2])) for i in range(0,16,2)]
