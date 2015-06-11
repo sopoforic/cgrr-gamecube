@@ -55,6 +55,29 @@ with open("edited.gci") as out:
     out.write(data)
 ```
 
+More:
+
+```python
+>>> g = gci.read_gci("Super Mario Sunshine.gci")
+
+>>> gci.get_region(g)
+<Region.REGION_US: 'E'>
+
+>>>gci.get_game_name(g)
+'Super Mario Sunshine'
+
+>>>gci.get_file_info(g)
+'11/2 Save Data'
+
+>>>banner = gci.get_banner(g)
+>>>banner
+<PIL.Image.Image image mode=RGBA size=96x32 at 0xB71A308C>
+
+>>>banner.show()
+>>>banner.save('Super Mario Sunshine Banner.gif')
+```
+
+
 Requirements
 ============
 

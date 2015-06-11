@@ -67,9 +67,6 @@ class Region(Enum):
     REGION_EUROPE = "P"
     REGION_US     = "E"
 
-def get_region(gci):
-    return Region(gci['m_gci_header']['Gamecode'][-1])
-
 def to_iconfmt(num):
     bf = int_to_bitfield(16)(num)
     iconfmt = [IconFmt(bitfield_to_int(2)(bf[i:i+2])) for i in range(0,16,2)]
@@ -208,23 +205,32 @@ def write_gci(gci): # TODO: rename?
     data = get_gci_reader(block_count=block_count).pack(gci)
     return data
 
-def parse_extra_data(gci):
-    """Parses additional (non-header) data in a gci."""
-    extra = {}
+def get_region(gci):
+    """Return the Region corresponding to a GCI file."""
+    return Region(gci['m_gci_header']['Gamecode'][-1])
+
+def get_game_name(gci):
+    """Extract the game name from a GCI file."""
     offset = gci['m_gci_header']['CommentsAddr']
-    extra['game_name'] = gci['m_save_data'][0][offset:offset+32].decode('ascii').rstrip('\x00')
-    extra['file_info'] = gci['m_save_data'][0][offset+32:offset+64].decode('ascii').rstrip('\x00')
-    # TODO: decode icon and other banner format
+    return gci['m_save_data'][0][offset:offset+32].decode('ascii').rstrip('\x00')
+
+def get_file_info(gci):
+    """Extract the file info string from a GCI file."""
+    offset = gci['m_gci_header']['CommentsAddr']
+    return gci['m_save_data'][0][offset+32:offset+64].decode('ascii').rstrip('\x00')
+
+def get_banner(gci):
+    """Extract the banner from a GCI file."""
     if gci['m_gci_header']['BIFlags'] == BIFlags.BANNER_CI8:
         offset = gci['m_gci_header']['ImageOffset']
         block = gci['m_save_data'][0]
         data = block[offset:offset+3584]
         img = parse_ci8(data, 96)
-        extra['banner'] = img
     elif gci['m_gci_header']['BIFlags'] == BIFlags.BANNER_RGB5A3:
         offset = gci['m_gci_header']['ImageOffset']
         block = gci['m_save_data'][0]
         data = block[offset:offset+6144]
         img = parse_rgb5a3(data, 96)
-        extra['banner'] = img
-    return extra
+    else:
+        return None
+    return img
