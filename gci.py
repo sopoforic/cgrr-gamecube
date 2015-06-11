@@ -99,22 +99,22 @@ def from_permissions(permissions):
 
 # Based on code from Dolphin in Source/Core/Core/HW/GCMemcard.h
 # The names here match the names used there.
-gci_header_format = [       # Offset  Size    Notes
-    ("Gamecode",    "4s"),  # 0x00    0x04    the fourth byte is the region code
-    ("Makercode",   "2s"),  # 0x04    0x02
-    ("Unused1",     "B"),   # 0x06    0x01    always 0xff
-    ("BIFlags",     "B"),   # 0x07    0x01
-    ("Filename",    "32s"), # 0x08    0x20
-    ("ModTime",     "L"),   # 0x28    0x04    seconds since 2000-01-01 00:00:00
-    ("ImageOffset", "L"),   # 0x2c    0x04
-    ("IconFmt", "H"),       # 0x30    0x02
-    ("AnimSpeed", "H"),     # 0x32    0x02
-    ("Permissions", "B"),   # 0x34    0x01
-    ("CopyCounter", "B"),   # 0x35    0x01
-    ("FirstBlock", "H"),    # 0x36    0x02    # of first block of file (0 == offset 0)
-    ("BlockCount", "H"),    # 0x38    0x02    file length (# of blocks in file)
-    ("Unused2", "H"),       # 0x3a    0x02    always 0xffff
-    ("CommentsAddr", "L"),  # 0x3c    0x04
+gci_header_format = [        # Offset  Size    Notes
+    ("Gamecode",     "4s"),  # 0x00    0x04    the fourth byte is the region code
+    ("Makercode",    "2s"),  # 0x04    0x02
+    ("Unused1",      "B"),   # 0x06    0x01    always 0xff
+    ("BIFlags",      "B"),   # 0x07    0x01
+    ("Filename",     "32s"), # 0x08    0x20
+    ("ModTime",      "L"),   # 0x28    0x04    seconds since 2000-01-01 00:00:00
+    ("ImageOffset",  "L"),   # 0x2c    0x04
+    ("IconFmt",      "H"),   # 0x30    0x02
+    ("AnimSpeed",    "H"),   # 0x32    0x02
+    ("Permissions",  "B"),   # 0x34    0x01
+    ("CopyCounter",  "B"),   # 0x35    0x01
+    ("FirstBlock",   "H"),   # 0x36    0x02    # of first block of file (0 == offset 0)
+    ("BlockCount",   "H"),   # 0x38    0x02    file length (# of blocks in file)
+    ("Unused2",      "H"),   # 0x3a    0x02    always 0xffff
+    ("CommentsAddr", "L"),   # 0x3c    0x04
 ]
 
 gci_header_reader = FileReader(
